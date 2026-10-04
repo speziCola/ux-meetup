@@ -137,7 +137,7 @@ a{color:inherit}
 
 /* footer */
 .footer{border-top:1px solid var(--stroke);display:flex;justify-content:center;padding-inline:16px}
-.footer .nav{max-width:1072px}
+.footer .nav{max-width:1072px; row-gap: 24px}
 .footlinks{flex:1;display:flex;justify-content:flex-end;padding-left:48px}
 .legal-dialog{width:min(100% - 32px,560px);max-height:min(80dvh,680px);padding:0;border:1px solid var(--stroke);border-radius:12px;background:var(--surface100);color:var(--fg-strong);box-shadow:0 24px 80px rgba(21,27,34,.28);overflow:hidden}
 .legal-dialog::backdrop{background:rgba(21,27,34,.48);backdrop-filter:blur(3px)}
