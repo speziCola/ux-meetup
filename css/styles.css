@@ -13,7 +13,7 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --page-bg:#151b22; --fg-strong:#ffffff; --fg-regular:#c9d2dc; --fg-light:#7e91a6; --fg-inverse:#151b22;
-  --fg-brand:#f4466c; --surface100:#283441; --surface200:#394c61; --bg-inverse:#151b22;
+  --fg-brand:#f4466c; --surface100:#283441; --surface200:#394c61; --bg-inverse:#ffffff;
   --chip-bg:#151b22; --chip-stroke:#283441; --chip-fg-strong:#ffffff; --chip-fg:#a5b3c2;
   --btn-secondary-bg:#f4466c; --btn-secondary-fg:#f4466c; --btn-primary-bg:#151b22; color-scheme:dark}}
 :root[data-theme="dark"]{
