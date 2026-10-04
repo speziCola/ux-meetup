@@ -232,7 +232,7 @@ a{color:inherit}
   .btn-outline{padding:4px 12px}
   .footer{padding-bottom:72px}
 }
-section[id]{scroll-margin-top:80px}
+section[id]{scroll-margin-top:64px}
 
 /* icons & logo: plain SVG files from assets/ (dark-colored).
    Dark mode flips them to white with a CSS filter; inside the mobile pill it's the other way round. */
