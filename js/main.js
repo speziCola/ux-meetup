@@ -22,7 +22,7 @@
     focusGraphic.setAttribute('viewBox',`0 0 ${bounds.width} ${bounds.height}`);
     const rows=lines.map(line=>({
       left:line.left-bounds.left-8,
-      top:line.top-bounds.top+12,
+      top:line.top-bounds.top+8,
       right:line.right-bounds.left+16,
       bottom:line.bottom-bounds.top
     }));

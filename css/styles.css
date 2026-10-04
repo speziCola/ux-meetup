@@ -41,10 +41,11 @@ a{color:inherit}
 .section{border-top:1px solid var(--stroke);padding:80px 16px;display:flex;justify-content:center;position:relative}
 .wrap{width:100%;max-width:1040px;position:relative}
 .eyebrow{font-weight:500;font-size:14px;line-height:24px;color:var(--fg-brand)}
-.h2{font-family:var(--font-title);font-weight:800;font-size:48px;line-height:57.6px;letter-spacing:-1px;margin:0;text-wrap:balance}
-.lead{font-size:18px;line-height:32px;color:var(--fg-regular);max-width:850px}
+.font-heading-md,.h2{font-family:var(--font-title);font-weight:800;font-size:48px;line-height:57.6px;letter-spacing:-1px;margin:0;text-wrap:balance}
+.font-display-xl,.display{font-family:var(--font-title);font-weight:800;font-size:104px;line-height:110%;letter-spacing:-2px}
+.lead,.font-text-lg{font-size:18px;line-height:32px;max-width:850px}
 .head{display:flex;flex-direction:column;gap:8px}
-.label{font-weight:500;font-size:14px;line-height:24px;color:var(--fg-strong)}
+.label,.font-label{font-weight:500;font-size:14px;line-height:24px;color:var(--fg-strong)}
 .card{background:var(--surface100);border-radius:12px;padding:24px;transition:background-color .25s ease,border-color .25s ease}
 .chips{display:flex;flex-wrap:wrap;gap:8px 4px}
 .chips.loose{gap:8px}
@@ -55,7 +56,7 @@ a{color:inherit}
 .header{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--stroke);display:flex;justify-content:center;padding-inline:0;background:color-mix(in srgb,var(--page-bg) 78%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:background-color .25s ease,border-color .25s ease}
 .nav{width:100%;max-width:1072px;height:64px;display:flex;align-items:center;justify-content:space-between;padding-inline:16px}
 .logo{display:flex;align-items:center;height:40px;text-decoration:none}
-.navlinks{flex:1;display:flex;align-items:center;padding-left:48px;height:54px}
+.navlinks{flex:1;display:flex;align-items:center;justify-content:center;height:54px}
 .navlinks a,.footlinks a{display:flex;align-items:center;height:54px;padding-inline:12px;font-size:14px;line-height:24px;color:var(--fg-strong);text-decoration:underline;text-underline-position:from-font}
 .navlinks a:hover,.footlinks a:hover{color:var(--fg-brand)}
 .btn-outline{border:1px solid var(--btn-secondary-fg);color:var(--btn-secondary-fg);border-radius:999px;padding:8px 16px;font-size:14px;line-height:24px;text-decoration:none;white-space:nowrap;transition:background .15s}
@@ -66,13 +67,14 @@ a{color:inherit}
 .hero-art{position:absolute;right:16px;bottom:32px;width:780px;height:575px;pointer-events:none}
 .hero-art img{position:absolute;inset:0;width:100%;height:100%;transition:opacity .55s ease}
 .hero .wrap{display:flex;flex-direction:column;gap:32px}
-.display{position:relative;font-family:var(--font-title);font-weight:800;font-size:104px;line-height:110%;letter-spacing:-2px;margin:0;max-width:850px}
+.display,.font-display-xl{position:relative;margin:0;max-width:850px}
 .display-copy{position:relative;z-index:1}
 .focus-graphic{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .focus-shape{fill:color-mix(in srgb,var(--brand) 10%,transparent);stroke:var(--brand);stroke-width:1;stroke-dasharray:4 3;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .focus{display:inline}
 .focus-tag{position:absolute;left:0;top:0;z-index:2;background:var(--brand);color:#fff;font-family:var(--font-info);font-weight:400;font-size:12px;line-height:12px;letter-spacing:0;padding:2px 8px;border-radius:4px;white-space:nowrap}
-.subtext{padding-block:16px;font-size:22px;line-height:33px;color:var(--fg-regular);max-width:840px}
+.subtext{padding-block:16px;font-size:22px;line-height:33px;max-width:840px}
+.subtext.font-text-xl{font-size:22px;line-height:33px;max-width:840px}
 .btn-solid{display:inline-flex;align-items:center;background:var(--btn-secondary-bg);border:1px solid var(--btn-secondary-bg);color:var(--btn-on-secondary);border-radius:999px;padding:12px 20px;font-size:16px;line-height:32px;text-decoration:none;align-self:flex-start;transition: transform 128ms ease;will-change: transform;}
 .btn-solid:hover{transform:translateY(-2px)}
 .stats{border-top:1px solid var(--stroke);display:flex;flex-wrap:wrap;max-width:1040px}
@@ -123,8 +125,7 @@ a{color:inherit}
 .sponsoring .wrap{display:flex;flex-direction:column;gap:24px}
 .talk{background:var(--bg-inverse);color:var(--fg-inverse);border-radius:12px;padding:32px;display:flex;gap:48px;transition:color .25s ease,background-color .25s ease,border-color .25s ease}
 .talk > div{flex:1 0 0;min-width:0;display:flex;flex-direction:column;gap:16px}
-.talk h3{font-family:var(--font-title);font-weight:800;font-size:22px;line-height:33px;letter-spacing:-1px;margin:0}
-.talk p{font-size:18px;line-height:32px}
+.talk h3,.font-heading-sm{font-family:var(--font-title);font-weight:800;font-size:22px;line-height:33px;letter-spacing:-1px;margin:0}
 .email{display:flex;flex-direction:column;gap:4px}
 .email span{font-weight:500;font-size:14px;line-height:24px}
 .email a {color:var(--fg-b);text-decoration:underline;text-underline-offset:3px}
@@ -135,19 +136,20 @@ a{color:inherit}
 .footer{border-top:1px solid var(--stroke);display:flex;justify-content:center;padding-inline:16px}
 .footer .nav{max-width:1072px}
 .footlinks{flex:1;display:flex;justify-content:flex-end;padding-left:48px}
-.legal-dialog{width:min(100% - 32px,560px);max-height:min(80dvh,680px);padding:0;border:1px solid var(--stroke);border-radius:12px;background:var(--surface100);color:var(--fg-strong);box-shadow:0 24px 80px rgba(21,27,34,.28)}
+.legal-dialog{width:min(100% - 32px,560px);max-height:min(80dvh,680px);padding:0;border:1px solid var(--stroke);border-radius:12px;background:var(--surface100);color:var(--fg-strong);box-shadow:0 24px 80px rgba(21,27,34,.28);overflow:hidden}
 .legal-dialog::backdrop{background:rgba(21,27,34,.48);backdrop-filter:blur(3px)}
-.legal-dialog-head{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 24px;border-bottom:1px solid var(--stroke);background:var(--surface100)}
+.legal-dialog-head{display:flex;align-items:center;gap:20px;padding:20px 24px 0 24px;background:var(--surface100)}
 .legal-dialog-title{margin:0;font-family:var(--font-title);font-size:24px;line-height:1.2;font-weight:800}
 .legal-dialog-close{padding:8px 12px;border:1px solid var(--stroke);border-radius:6px;color:var(--fg-strong);font-size:14px;line-height:20px}
 .legal-dialog-close:hover{background:var(--surface200)}
-.legal-dialog-content{display:flex;flex-direction:column;gap:20px;padding:20px 24px 24px;color:var(--fg-regular);font-size:15px;line-height:1.6}
+.legal-dialog-content{display:flex;flex:1;flex-direction:column;gap:20px;min-height:0;padding:20px 24px 24px;color:var(--fg-regular);font-size:15px;line-height:1.6;overflow-y:auto}
+.legal-dialog-actions{display:flex;justify-content:flex-end;padding:0 24px 20px;flex:none}
 .legal-dialog-content section{display:flex;flex-direction:column;gap:8px}
 .legal-dialog-content h3{margin:0;color:var(--fg-strong);font-size:16px;line-height:1.4;font-weight:800}
 .legal-dialog-content address{font-style:normal}
 .legal-dialog-content a{color:var(--fg-brand);text-underline-offset:3px}
 .legal-dialog-intro{color:var(--fg-light)}
-.legal-dialog[open]{animation:legal-dialog-in .18s ease-out}
+.legal-dialog[open]{display:flex;flex-direction:column;animation:legal-dialog-in .18s ease-out}
 @keyframes legal-dialog-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.legal-dialog[open]{animation:none}}
 
@@ -165,11 +167,12 @@ a{color:inherit}
   .talk{flex-direction:column;gap:32px}
 }
 @media (max-width:720px){
+  .logo-word{width:auto;height:15px !important;margin-top:2px}
   .navlinks{display:none}
   .section,.hero{padding-block:48px}
   .sponsoring{padding-bottom:48px}
   .hero-art{right:0;top:32px;bottom:auto;width:360px;height:265px}
-  .display{font-size:clamp(46px,14.5vw,104px);line-height:1;letter-spacing:-1px}
+  .display{font-size:clamp(46px,14.5vw,104px);line-height:1.1;letter-spacing:-1px}
   .subtext{font-size:22px;line-height:33px}
   .stat{max-width:none}
   .stat.sponsor{flex-basis:100%;border-left:0;border-top:1px solid var(--stroke)}
@@ -230,7 +233,7 @@ section[id]{scroll-margin-top:80px}
    Dark mode flips them to white with a CSS filter; inside the mobile pill it's the other way round. */
 .icon{flex:none;max-width:none}
 .logo-mark{width:40px;height:40px}
-.logo-word{width:127px;height:14px}
+.logo-word{width:auto;height:18px;margin-top:2px}
 .ico-menu{display:block;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ico-moon,.ico-sun{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 :root[data-theme="dark"] .icon:not(.ico-menu):not(.ico-moon):not(.ico-sun){filter:invert(1) brightness(2)}
