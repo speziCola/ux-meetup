@@ -1,5 +1,5 @@
 /* Implemented from Figma "UX Freiburg Meetup" › Homepage (Desktop 1920 / Mobile 360, light + dark).
-   Tokens mirror the Figma variables. Fonts: Supreme loads from /fonts (see fonts/fonts.css); Figtree from Google Fonts is the fallback. */
+  Tokens mirror the Figma variables. Supreme loads locally from /fonts (see fonts/fonts.css). */
 :root{
   --page-bg:#f4f1ef; --fg-strong:#151b22; --fg-regular:#394c61; --fg-light:#4f657e; --fg-inverse:#ffffff;
   --fg-brand:#eb0034; --brand:#f4466c; --stroke:#667d9540;
@@ -7,9 +7,9 @@
   --chip-bg:#ebe7e3; --chip-stroke:#d9cfc7; --chip-fg-strong:#201914; --chip-fg:#755e4b;
   --btn-secondary-bg:#151b22; --btn-secondary-fg:#151b22; --btn-on-secondary:#ffffff;
   --btn-primary-bg:#f4466c; --btn-on-primary:#ffffff;
-  --font-title:"Supreme", "Figtree", system-ui, sans-serif;
-  --font-body:"Supreme", "Figtree", system-ui, sans-serif;
-  --font-info:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-title:"Supreme", system-ui, sans-serif;
+  --font-body:"Supreme", system-ui, sans-serif;
+  --font-info:ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --page-bg:#151b22; --fg-strong:#ffffff; --fg-regular:#c9d2dc; --fg-light:#7e91a6; --fg-inverse:#151b22;
@@ -116,7 +116,10 @@ a{color:inherit}
 .team-wrap{display:flex;flex-direction:column;gap:24px}
 .team{display:flex;gap:16px}
 .person{flex:1 0 0;min-width:0;display:flex;flex-direction:column;gap:16px}
-.portrait{width:306px;height:306px;max-width:100%}
+.portrait{width:256px;height:256px;max-width:100%}
+.portrait-placeholder{position:relative;width:256px;height:256px;max-width:100%;display:grid;place-items:center;color:var(--fg-light)}
+.portrait-placeholder::before{content:"";position:absolute;z-index:0;width:73%;aspect-ratio:1;border-radius:3%;background:var(--surface100);transform:rotate(-30deg)}
+.portrait-placeholder span{position:relative;z-index:1;font-size:52px;line-height:1}
 .person-name{font-weight:500;font-size:22px;line-height:33px}
 .person-role{font-size:14px;line-height:24px;color:var(--fg-light)}
 
@@ -164,6 +167,8 @@ a{color:inherit}
   .team{flex-direction:column}
   .person{flex-direction:row;align-items:center}
   .portrait{width:76.5px;height:76.5px}
+  .portrait-placeholder{width:76.5px;height:76.5px;flex:none}
+  .portrait-placeholder span{font-size:28px}
   .talk{flex-direction:column;gap:32px}
 }
 @media (max-width:720px){
