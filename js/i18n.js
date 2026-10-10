@@ -21,7 +21,7 @@ window.UXFR_I18N={
     'nav.menu':'Menü',
     'lang.label':'Sprache',
 
-    'hero.titlePre':'Hier baut Freiburg ',
+    'hero.titlePre':'Wo Freiburg sich trifft für ',
     'hero.titleFocus':'bessere Produkte',
     'hero.titlePost':'',
     'hero.text':'Wir sind eine offene Community für alle, die sich für UX, Produktdesign, Research und digitale Produkte interessieren. Wir treffen uns regelmäßig, um Erfahrungen auszutauschen und über Projekte, Methoden, Tools und Trends zu sprechen.',
