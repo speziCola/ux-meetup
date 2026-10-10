@@ -1,4 +1,10 @@
 (function(){
+  const THEME_KEY='uxfr-theme'; // keep in sync with the inline script in index.html
+  const LANG_KEY='uxfr-lang';   // keep in sync with the inline script in index.html
+  const LANGS=['en','de'];
+  const I18N=window.UXFR_I18N||{en:{},de:{}};
+  let lang=LANGS.includes(document.documentElement.lang)?document.documentElement.lang:'en';
+  const t=key=>(I18N[lang]&&I18N[lang][key])||I18N.en[key]||key;
   const root=document.documentElement;
   const mq=window.matchMedia('(prefers-color-scheme: dark)');
   const focusTitle=document.querySelector('.display');
@@ -88,15 +94,36 @@
   window.addEventListener('resize',updateFocusShape);
   document.fonts.ready.then(updateFocusShape);
   updateFocusShape();
-  let saved=null; try{saved=localStorage.getItem('uxfr-theme')}catch(e){}
+  let saved=null; try{saved=localStorage.getItem(THEME_KEY)}catch(e){}
   if(saved==='light'||saved==='dark') root.setAttribute('data-theme',saved);
   const isDark=()=>{const t=root.getAttribute('data-theme');return t?t==='dark':mq.matches};
-  const sync=()=>{const d=isDark();document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.setAttribute('aria-label',d?'Switch to light mode':'Switch to dark mode'))};
+  const sync=()=>{const d=isDark();document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.setAttribute('aria-label',t(d?'theme.toLight':'theme.toDark')))};
   document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.addEventListener('click',()=>{
     const next=isDark()?'light':'dark'; root.setAttribute('data-theme',next);
-    try{localStorage.setItem('uxfr-theme',next)}catch(e){} sync();
+    try{localStorage.setItem(THEME_KEY,next)}catch(e){} sync();
   }));
   mq.addEventListener&&mq.addEventListener('change',sync); sync();
+
+  // Language: English lives in the markup; remember it per element so we can switch back.
+  // The initial language is picked by the inline script in <head> (saved choice, else browser language).
+  const textNodes=[...document.querySelectorAll('[data-i18n]')].map(el=>({el,key:el.dataset.i18n,en:el.textContent}));
+  const labelNodes=[...document.querySelectorAll('[data-i18n-label]')].map(el=>({el,key:el.dataset.i18nLabel,en:el.getAttribute('aria-label')}));
+  const langButtons=[...document.querySelectorAll('[data-lang]')];
+  const applyLang=next=>{
+    lang=LANGS.includes(next)?next:'en';
+    root.lang=lang;
+    textNodes.forEach(({el,key,en})=>{el.textContent=lang==='en'?en:(I18N[lang][key]??en)});
+    labelNodes.forEach(({el,key,en})=>el.setAttribute('aria-label',lang==='en'?en:(I18N[lang][key]??en)));
+    langButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
+    sync();
+    updateFocusShape();
+    delete root.dataset.i18nPending;
+  };
+  langButtons.forEach(b=>b.addEventListener('click',()=>{
+    try{localStorage.setItem(LANG_KEY,b.dataset.lang)}catch(e){}
+    applyLang(b.dataset.lang);
+  }));
+  applyLang(lang);
 
   const menu=document.getElementById('fmenu'), btn=document.getElementById('fmenu-btn');
   const talk=document.querySelector('.talk'), pill=menu.querySelector('.fpill');
@@ -106,9 +133,10 @@
     const overlaps=a.width>0&&a.height>0&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
     menu.classList.toggle('over-talk',!menu.classList.contains('open')&&overlaps);
   };
-  menu.querySelectorAll('.fmenu-links a').forEach(a=>a.tabIndex=-1);
+  const menuFocusables=menu.querySelectorAll('.fmenu-links a, .fmenu-lang button');
+  menuFocusables.forEach(el=>el.tabIndex=-1);
   const setOpen=o=>{if(menu.classList.contains('open')===o)return;menu.classList.toggle('open',o);btn.setAttribute('aria-expanded',String(o));
-    menu.querySelectorAll('.fmenu-links a').forEach(a=>a.tabIndex=o?0:-1);syncTalkContrast()};
+    menuFocusables.forEach(el=>el.tabIndex=o?0:-1);syncTalkContrast()};
   setOpen(false);
   btn.addEventListener('click',e=>{e.stopPropagation();setOpen(!menu.classList.contains('open'))});
   menu.querySelectorAll('.fmenu-links a').forEach(a=>a.addEventListener('click',()=>setOpen(false)));

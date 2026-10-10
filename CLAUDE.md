@@ -1,547 +1,171 @@
 # CLAUDE.md
 
-This repository is a lightweight static marketing site for the UX Meetup Freiburg community, built directly from a Figma homepage reference. The implementation is intentionally plain HTML/CSS/JS with no framework or bundler. This document captures the project’s conventions so future design-to-code and Figma MCP work stays aligned with the existing codebase.
+This repository is a lightweight static marketing site for the UX Meetup Freiburg community, built directly from a Figma homepage reference. The implementation is intentionally plain HTML/CSS/JS with no framework, bundler or build step. This document captures the project's conventions so future design-to-code and Figma MCP work stays aligned with the codebase.
 
 Reference Figma: https://www.figma.com/design/RTa1NOZYSTbJbehzlxKncQ/UX-Freiburg-Meetup?node-id=2707-7938&m=dev
 
 ---
 
-## 1) Design System Structure
+## 1) CSS architecture
 
-### 1.1 Token definitions
-
-Design tokens are defined centrally in `css/styles.css` in a CSS custom property block (`:root`). The file comment explicitly says the styles were implemented from the Figma homepage and that tokens mirror the Figma variables.
+All styles live in `css/styles.css`, organised in cascade layers. The layer order decides which rule wins, so selectors stay flat (mostly a single class) and `!important` is never needed:
 
 ```css
-:root {
-  --page-bg: #f4f1ef;
-  --fg-strong: #151b22;
-  --fg-regular: #394c61;
-  --fg-light: #4f657e;
-  --fg-inverse: #ffffff;
-  --fg-brand: #eb0034;
-  --brand: #f4466c;
-  --stroke: #667d9540;
-  --surface100: #ffffff;
-  --surface200: #f4f1ef;
-  --bg-inverse: #151b22;
-  --chip-bg: #ebe7e3;
-  --chip-stroke: #d9cfc7;
-  --chip-fg-strong: #201914;
-  --chip-fg: #755e4b;
-  --btn-secondary-bg: #151b22;
-  --btn-secondary-fg: #151b22;
-  --btn-on-secondary: #ffffff;
-  --btn-primary-bg: #f4466c;
-  --btn-on-primary: #ffffff;
-  --font-title: "Supreme", "Figtree", system-ui, sans-serif;
-  --font-body: "Supreme", "Figtree", system-ui, sans-serif;
-  --font-info: "JetBrains Mono", ui-monospace, Menlo, monospace;
-}
+@layer reset, tokens, base, type, layout, components, utilities;
 ```
 
-This is the source of truth for colors, typography, and major UI treatments. All later styles reference these variables instead of hardcoded values.
+| Layer | Contains |
+|---|---|
+| `reset` | box-sizing, `button{all:unset}`, margin resets for `p, h1–h3, dl, dd, ul` |
+| `tokens` | every custom property, theme switching, responsive token overrides |
+| `base` | element defaults: `body`, `a`, `:focus-visible`, smooth scroll |
+| `type` | one class per Figma text style (`.font-*`) |
+| `layout` | `.section`, `.wrap`, `.stack` + gap modifiers |
+| `components` | page components and the central responsive `@media` blocks |
+| `utilities` | `.font-color-*`, `.measure` — always win over components |
 
-Dark mode is handled in two ways:
-
-- automatic system preference via `@media (prefers-color-scheme: dark)`
-- manual override through `[data-theme="dark"]` and a persisted `localStorage` theme setting
-
-```css
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --page-bg: #151b22;
-    --fg-strong: #ffffff;
-    --fg-regular: #c9d2dc;
-    --fg-light: #7e91a6;
-    --fg-inverse: #151b22;
-    --fg-brand: #f4466c;
-    --surface100: #283441;
-    --surface200: #394c61;
-    --bg-inverse: #151b22;
-    --chip-bg: #151b22;
-    --chip-stroke: #283441;
-    --chip-fg-strong: #ffffff;
-    --chip-fg: #a5b3c2;
-    --btn-secondary-bg: #f4466c;
-    --btn-secondary-fg: #f4466c;
-    --btn-primary-bg: #151b22;
-  }
-}
-```
-
-#### Token structure used in this codebase
-
-- Tokens are CSS custom properties rather than a separate JSON/TS token package.
-- Grouping is semantic, not raw numeric: `--fg-*`, `--surface*`, `--chip-*`, `--btn-*`, `--font-*`.
-- Theme variants use the same variable names and override their values per theme.
-- No transformation pipeline exists; the site is a hand-maintained token layer, not generated from a design token build tool.
-
-#### Token transformation system
-
-There is no token transformation system, design-token package, or metadata pipeline in this repo.
-
-- No `tokens.json`, `design-tokens.css`, `tailwind.config.*`, `stitches`, `vanilla-extract`, or theme-generator setup is present.
-- The design system is effectively a manually curated CSS variable system directly authored in `css/styles.css`.
-- Any future Figma-driven updates should preserve the same custom-property model.
-
-### 1.2 Typography tokens and text styles
-
-Typography defaults are also defined in CSS variables and then consumed through reusable classes.
-
-```css
-body {
-  margin: 0;
-  background: var(--page-bg);
-  color: var(--fg-strong);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 24px;
-  -webkit-font-smoothing: antialiased;
-}
-
-.h2 {
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 48px;
-  line-height: 57.6px;
-  letter-spacing: -1px;
-  margin: 0;
-  text-wrap: balance;
-}
-
-.display {
-  position: relative;
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 104px;
-  line-height: 110%;
-  letter-spacing: -2px;
-  margin: 0;
-  max-width: 850px;
-}
-```
-
-The design uses a simple type system rather than a full `typography.ts` or component API. Typography is inferred from CSS class names rather than semantic tokens.
+New rules go into the matching layer. Never add unlayered rules: they would beat every layer.
 
 ---
 
-## 2) Component Library
+## 2) Design tokens (`@layer tokens`)
 
-### 2.1 Where UI components are defined
+Tokens are hand-authored CSS custom properties in `:root`. There is no token pipeline, JSON or build tool.
 
-There is no dedicated component library or React/Vue component tree in this repo. UI patterns are defined in the static markup of `index.html` and the corresponding CSS utility/class names in `css/styles.css`.
+### 2.1 Colors
 
-Examples:
+Two tiers:
 
-- header/nav: `.header`, `.nav`, `.navlinks`
-- buttons: `.btn-outline`, `.btn-solid`, `.btn-primary`
-- cards: `.card`
-- chips: `.chip`, `.chips`
-- section wrappers: `.section`, `.wrap`, `.head`
-- rating blocks and stats: `.stat`, `.rating`, `.bar`
-
-### 2.2 Component architecture
-
-The architecture is page-based and class-driven, not atomic component-driven.
-
-Examples from the HTML:
-
-```html
-<header class="header">
-  <nav class="nav" aria-label="Main navigation">
-    <a class="logo" href="#top" aria-label="UX Meetup Freiburg"> ... </a>
-    <div class="navlinks"> ... </div>
-    <div class="nav-actions">
-      <button class="theme-toggle" type="button" data-theme-toggle ...></button>
-      <a class="btn-outline" href="https://www.meetup.com/...">Join the group</a>
-    </div>
-  </nav>
-</header>
-```
-
-The CSS layer then provides the shared behavior and visual styling:
+1. **Palette primitives** (raw hex, named by hue + step): `--ink-900 … --ink-200`, `--sand-100 … --sand-900`, `--pink-500`, `--red-600`, `--white`.
+2. **Semantic tokens** (what components use), each written once with `light-dark(light, dark)`:
 
 ```css
-.nav {
-  width: 100%;
-  max-width: 1072px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-inline: 16px;
-}
-
-.btn-solid {
-  display: inline-flex;
-  align-items: center;
-  background: var(--btn-secondary-bg);
-  border: 1px solid var(--btn-secondary-bg);
-  color: var(--btn-on-secondary);
-  border-radius: 999px;
-  padding: 12px 20px;
-  font-size: 16px;
-  line-height: 32px;
-  text-decoration: none;
-  align-self: flex-start;
-}
+--page-bg:light-dark(var(--sand-100),var(--ink-900));
+--fg-strong:light-dark(var(--ink-900),var(--white));
 ```
 
-### 2.3 Documentation / Storybook
+Semantic names: `--page-bg`, `--fg-strong`, `--fg-regular`, `--fg-light`, `--fg-inverse`, `--fg-brand`, `--surface100`, `--surface200`, `--bg-inverse`, `--chip-*`, `--btn-secondary`, `--btn-primary-bg`, `--btn-on-*`, `--fg-on-brand`, `--brand`, `--stroke`, `--shadow-rgb` (use as `rgb(var(--shadow-rgb) / .2)`).
 
-There are no Storybook, MDX stories, or component docs in this repo.
+Components must only use semantic tokens, never primitives or raw hex.
 
-- No `*.stories.*` files found.
-- No design-system documentation app present.
-- The closest thing to a pattern reference is the one-page implementation plus classes in `css/styles.css`.
+### 2.2 Theming (light / dark)
+
+- `color-scheme` on `:root` selects which side of `light-dark()` applies: `light dark` by default (follows the system live), `[data-theme="light"]` / `[data-theme="dark"]` force one.
+- `data-theme` is set from `localStorage` (`uxfr-theme`) by the inline script in `<head>` (before first paint) and by the toggle in `js/main.js`. The key is duplicated in both places — keep them in sync.
+- Non-color theme differences (image crossfade, moon/sun icon, logo inversion) use switch tokens: `--light-opacity`, `--dark-opacity`, `--logo-filter`, `--moon-transform`, `--sun-transform`. Their dark values are set in the single dark-switch block in `@layer tokens`; components only read them.
+- Browsers without `light-dark()` (before 2024) get the light theme via an `@supports not` fallback block. If you add a semantic color token, add its light value there too.
+
+### 2.3 Typography
+
+- Font: Supreme, self-hosted in `fonts/` as woff2 (ttf fallback), declared in `fonts/fonts.css` (only `@font-face` lives there). The Extrabold weight is preloaded in `index.html`.
+- Families: `--font-title`, `--font-body`, `--font-info` (monospace). Weights: `--weight-regular/medium/heavy`.
+- Scale: `--text-{xs,sm,md,lg,xl,heading-sm,heading-md,display-xl}` with matching `--leading-*`. **Font sizes and line-heights are in `rem`** so text scales with the visitor's browser font size; comments note the Figma px values (e.g. `/* 14/24 */`).
+- Responsive type is done by redefining the size/leading tokens inside the `@media (max-width:720px)` block in `@layer tokens`, not by overriding classes.
+
+### 2.4 Spacing, shape, motion
+
+- Spacing is in `px` on a 4px grid: `--space-N` = N × 4px (`--space-1` 4px … `--space-32` 128px). Plus `--section-pad` (80px, 48px on mobile) and `--gutter` (16px).
+- Radius: `--radius-sm` (4px), `--radius-md` (12px), `--radius-pill`.
+- Motion: `--dur-theme` (.25s color transitions), `--dur-lift` (button hover), `--ease-spring`.
+- Layering: `--z-header`, `--z-menu`.
+
+One-off sizes (portrait 256px, menu 268×312, etc.) stay as raw values in their component.
 
 ---
 
-## 3) Frameworks & Libraries
+## 3) Type classes (`@layer type`)
 
-### 3.1 UI frameworks
+One class per Figma text style. Each sets family, weight, size, line-height (and tracking where needed) — never color or layout:
 
-This is a static HTML/CSS/JS site with no UI framework.
+`.font-display-xl`, `.font-heading-md`, `.font-heading-sm`, `.font-stat-number`, `.font-text-xl`, `.font-text-lg`, `.font-text-sm`, `.font-text-xs`, `.font-label`, `.font-eyebrow` (the only one with a color, `--fg-brand`).
 
-- No React app
-- No Vue app
-- No Angular app
-- No TypeScript build configuration
+Color comes from utilities (`.font-color-regular`, `.font-color-light`) or is inherited. Combine type + component + utility classes in the markup:
 
-### 3.2 Styling libraries
-
-The styling is plain CSS, not a CSS-in-JS or utility framework.
-
-- No Tailwind
-- No Bootstrap
-- No styled-components
-- No CSS Modules
-- No SCSS toolchain
-
-### 3.3 Build system and bundler
-
-There is no bundler or build step.
-
-This is confirmed by `README.md`:
-
-```md
-# UX Meetup Freiburg – One-Pager
-
-Static site built from the Figma file "UX Freiburg Meetup" › Homepage. No build step: open `index.html` in a browser, or upload the whole folder to any web host.
+```html
+<h2 class="font-heading-md measure">…</h2>
+<p class="font-text-lg font-color-regular measure">…</p>
+<span class="stat-n font-stat-number">361</span>
 ```
-
-The project uses:
-
-- plain `index.html`
-- `css/styles.css`
-- `js/main.js`
-- direct browser execution only
 
 ---
 
-## 4) Asset Management
+## 4) Layout and components
 
-### 4.1 Asset storage and references
+### 4.1 Layout primitives (`@layer layout`)
 
-Assets are stored under `assets/` and referenced directly in the HTML and CSS.
+- `.section` — full-width band with top border and `--section-pad`.
+- `.wrap` — centered 1040px content column.
+- `.stack` — vertical flex with a gap of 16px. Modifiers: `.stack-xs` (4), `.stack-sm` (8), `.stack-md` (20), `.stack-lg` (24), `.stack-xl` (32). Every `.stack` resets `--stack-gap`, so nested stacks never inherit their parent's gap. Use `.stack` instead of writing new flex-column rules.
 
-Examples:
+### 4.2 Components (`@layer components`)
 
-```html
-<img class="light-only" src="assets/images/hero-art-light.png" alt="">
-<img class="dark-only" src="assets/images/hero-art-dark.png" alt="">
-```
+Components are page-specific classes in `index.html` + `css/styles.css` (no component library, no Storybook). Main ones:
 
-```html
-<img class="icon logo-mark" src="assets/logos/logo-mark.svg" alt="" width="40" height="40">
-```
+- Buttons: `.btn` base (pill shape, border, centered) + one modifier: `.btn-outline`, `.btn-solid`, `.btn-primary`.
+- Header/nav: `.header`, `.nav`, `.navlinks`, `.nav-actions`, `.logo`, `.theme-toggle`.
+- Hero: `.hero`, `.hero-art`, `.display`, `.focus-*`, `.subtext`, `.stats`, `.stat`.
+- Content: `.card`, `.chips`/`.chip`, `.about`, `.value`, `.rating`, `.bar`, `.domain`, `.team`/`.person`, `.talk`/`.talk-col`, `.email`.
+- Mobile floating menu: `.fmenu`, `.fpill`, `.fmenu-links`.
+- Legal dialog: `.legal-dialog*`.
 
-The repo organizes assets by type:
+**Class names used by `js/main.js` — don't rename without updating the JS:** `.display`, `.focus-text`, `.focus-graphic`, `.focus-shape`, `.focus-tag`, `.talk`, `.fpill`, `.fmenu-links`, state classes `.open` and `.over-talk`, IDs `#fmenu`, `#fmenu-btn`, `#legal-notice`, and the `[data-theme-toggle]` / `[data-open-legal]` attributes.
+
+### 4.3 Responsive
+
+Breakpoints mirror the Figma mobile design: `1100px`, `900px`, `720px` (`max-width`, in px). Component overrides live in the central `@media` blocks at the end of `@layer components`; token overrides (type sizes, `--section-pad`) in `@layer tokens`. Don't scatter media queries through the file.
+
+---
+
+### 4.4 Language (EN / DE)
+
+- English is the source text in `index.html` (also what no-JS visitors and crawlers get). German strings live in `js/i18n.js` (`window.UXFR_I18N.de`), keyed by `data-i18n="key"` (text content) or `data-i18n-label="key"` (`aria-label`). Strings that only JS sets (theme toggle labels) have both `en` and `de` entries.
+- Every new piece of visible text needs a `data-i18n` key and a German entry. Text with markup inside must be split into separate elements, each with its own key (see the hero headline: `titlePre` / `titleFocus` / `titlePost`).
+- Initial language: saved choice in `localStorage` (`uxfr-lang`), otherwise the first `en`/`de` match in `navigator.languages`, otherwise English. The inline `<head>` script decides this before first paint and sets `<html lang>`; for German it hides the body (`data-i18n-pending`) until `main.js` has swapped the text in.
+- The switcher (`.lang-switch`, buttons with `data-lang` + `aria-pressed`) and the theme toggle sit in `.foot-prefs`, the first item of the footer's `.footlinks`. Only a manual click stores a preference.
+- At ≤720px (when the floating mobile menu is active) `.foot-prefs` is hidden: the language switcher appears inside the open menu panel (`.fmenu-lang`, bottom-left next to the pill) and the theme toggle is the one in the pill. Both switchers are kept in sync by `main.js` via `[data-lang]`.
+
+## 5) Assets and icons
 
 ```text
 assets/
-  logos/
-  icons/
-  images/
+  logos/   logo-mark.svg, wordmark.svg, logo-mark-favicon(-dark).svg, sponsor-smashing.svg
+  icons/   moon.svg, sun.svg, menu.svg
+  images/  hero-art-light.png, hero-art-dark.png, portrait-christopher.png
 ```
 
-### 4.2 Asset optimization techniques
-
-There is no formal optimization pipeline. The implementation relies on:
-
-- SVGs for logo and icons
-- PNG assets for hero art and portraits
-- CSS-based theme swaps for dark/light versions of the same visual asset
-
-Examples from `index.html`:
-
-```html
-<img class="light-only" src="assets/images/hero-art-light.png" alt="">
-<img class="dark-only" src="assets/images/hero-art-dark.png" alt="">
-```
-
-and in `css/styles.css`:
-
-```css
-.dark-only { opacity: 0 }
-.light-only { opacity: 1 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .dark-only { opacity: 1 }
-  :root:not([data-theme="light"]) .light-only { opacity: 0 }
-}
-```
-
-### 4.3 CDN configuration
-
-There is a Google Fonts CDN used in `index.html`:
-
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;800&family=JetBrains+Mono:wght@400&display=swap">
-```
-
-There are no other CDN or asset-hosting conventions in this project.
+- Logos are `<img>` SVGs (dark artwork); dark mode inverts them via `--logo-filter`.
+- UI icons (moon, sun, menu) are inline `<svg>` using `stroke: currentColor`.
+- Light/dark image pairs use `.light-only` / `.dark-only` (opacity crossfade driven by the theme switch tokens).
+- Images carry `width`/`height` attributes. No optimisation pipeline exists; optimise assets by hand.
 
 ---
 
-## 5) Icon System
-
-### 5.1 Where icons are stored
-
-Icons are stored under `assets/icons/` and `assets/logos/` as SVG files.
-
-Examples:
-
-- `assets/icons/moon.svg`
-- `assets/icons/sun.svg`
-- `assets/icons/menu.svg`
-- `assets/logos/logo-mark.svg`
-- `assets/logos/wordmark.svg`
-
-### 5.2 How icons are imported and used
-
-They are used directly as inline SVG or as regular image elements, depending on the component.
-
-Example from `index.html` for theme toggle:
-
-```html
-<button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode">
-  <svg class="icon ico-moon" aria-hidden="true" viewBox="0 0 20 20">
-    <path d="..."/>
-  </svg>
-  <svg class="icon ico-sun" aria-hidden="true" viewBox="0 0 20 20">
-    <path d="..."/>
-  </svg>
-</button>
-```
-
-And for logos:
-
-```html
-<span class="logo-svg" aria-hidden="true">
-  <img class="icon logo-mark" src="assets/logos/logo-mark.svg" alt="" width="40" height="40">
-  <img class="icon logo-word" src="assets/logos/wordmark.svg" alt="" width="127" height="14">
-</span>
-```
-
-### 5.3 Naming conventions
-
-There is a simple naming convention:
-
-- `logo-mark.svg`, `wordmark.svg`
-- `moon.svg`, `sun.svg`, `menu.svg`
-- `logo-mark-favicon.svg`, `logo-mark-favicon-dark.svg`
-
-The naming is purpose-driven and consistent with their role, not generated by a build tool or icon package.
-
----
-
-## 6) Styling Approach
-
-### 6.1 CSS methodology
-
-This project uses a plain, global CSS approach with opinionated utility-like classes and section-specific styling. There is no CSS Modules, SCSS, CSS-in-JS, or utility framework.
-
-Core patterns:
-
-```css
-.section {
-  border-top: 1px solid var(--stroke);
-  padding: 80px 16px;
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-
-.wrap {
-  width: 100%;
-  max-width: 1040px;
-  position: relative;
-}
-```
-
-This “layout primitives + class composition” pattern is the dominant style approach.
-
-### 6.2 Global styles
-
-`css/styles.css` includes global reset and base rules:
-
-```css
-* { box-sizing: border-box; }
-button { all: unset; box-sizing: border-box; cursor: pointer; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background: var(--page-bg);
-  color: var(--fg-strong);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 24px;
-}
-```
-
-These rules define the foundation and keep all page-level styling centralized in one stylesheet.
-
-### 6.3 Responsive design implementation
-
-Responsive logic is handled in `@media` breakpoints that map to the Figma mobile design, especially for widths around 900px and 720px.
-
-```css
-@media (max-width: 900px) {
-  .about { flex-direction: column; }
-  .rating { width: 100%; }
-  .team { flex-direction: column; }
-  .person { flex-direction: row; align-items: center; }
-}
-
-@media (max-width: 720px) {
-  .navlinks { display: none; }
-  .hero-art { right: 0; top: 32px; bottom: auto; width: 360px; height: 265px; }
-  .display {
-    font-size: clamp(46px, 14.5vw, 104px);
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-}
-```
-
-The responsive implementation is not component-based or framework-driven; it is a central, breakpoints-based stylesheet pattern.
-
----
-
-## 7) Project Structure
-
-### 7.1 Overall organization
+## 6) Project structure
 
 ```text
 .
-├── index.html
+├── index.html        page markup and section composition
+├── css/styles.css    tokens, type, layout, components, responsive rules (layered)
+├── fonts/fonts.css   @font-face for Supreme (woff2 + ttf)
+├── js/i18n.js        German translations (English is in the markup)
+├── js/main.js        language + theme switching, focus outline drawing, mobile menu, legal dialog
+├── assets/           logos, icons, images
 ├── README.md
-├── css/
-│   └── styles.css
-├── fonts/
-│   ├── fonts.css
-│   └── *.woff2 / *.ttf fonts
-├── js/
-│   └── main.js
-├── assets/
-│   ├── icons/
-│   ├── images/
-│   └── logos/
 └── CLAUDE.md
 ```
 
-This is a single-page marketing site with a very flat structure. There is no app shell, no routing layer, and no component directory.
-
-### 7.2 Feature organization patterns
-
-The organization is intentionally simple:
-
-- `index.html` contains page structure and sections
-- `css/styles.css` contains all design tokens, layout primitives, and visual behavior
-- `js/main.js` contains UI behavior (theme toggle, floating mobile menu, legal dialog)
-- `assets/` stores static visual resources
-
-This is a classic “static marketing site” pattern, not a framework-based feature architecture.
+No framework, no TypeScript, no preprocessor, no CSS-in-JS, no Tailwind. Open `index.html` directly or upload the folder to any static host.
 
 ---
 
-## 8) Figma-to-code integration rules for this project
+## 7) Figma-to-code rules
 
-The design system is highly compatible with Figma MCP workflows because it already mirrors the Figma-defined variables and section structure. The repo should be treated as a CSS variable + semantic utility system, not as a fully componentized design system.
+1. Map Figma text styles to the existing `.font-*` classes; Figma color variables to the semantic tokens; spacing to `--space-*`.
+2. Never introduce raw hex, px font sizes or ad hoc spacing in components — add a token if a value is genuinely new, and add new colors as palette primitive + semantic token (light and dark, plus the `@supports not` fallback).
+3. Reuse `.section`, `.wrap`, `.stack`, `.card`, `.btn` before writing new layout rules. Add a component class only for a genuinely new pattern.
+4. Keep selectors at one class where possible; put the rule in the right layer instead of raising specificity.
+5. Maintain dark-mode parity through tokens only — components never contain theme selectors.
+6. Keep responsive changes in the central `@media` blocks.
+7. Prefer flexbox/grid + tokens over absolute positioning unless the design truly requires it.
 
-### Preferred mapping strategy
-
-1. Match Figma layers to existing semantic classes in `css/styles.css` before creating new styles.
-2. Reuse tokens from the `:root` token block rather than introducing ad hoc raw colors.
-3. Preserve the section-based architecture in `index.html` and only add new class names when a new pattern genuinely needs it.
-4. Maintain dark mode parity using theme variables and the same `data-theme` pattern.
-5. Keep responsive rules in the same `@media` style as the current file rather than introducing a separate mobile CSS system.
-6. Use the Figma visual target as a guide, but express the implementation in project-native layout patterns (flexbox/grid + CSS variables), not as absolute-position-heavy structures unless absolutely required.
-
-### Figma design match expectations
-
-The implementation currently follows the Figma “Homepage” structure closely:
-
-- sticky header with navigation
-- hero section with large headline, lead copy, CTA, stats strip
-- about section with two-column split and rating card
-- community section with domain tags and role chips
-- organizer section
-- sponsorship/contact CTA
-- footer and legal dialog
-
-This means future Figma changes should reuse the same section composition and token language instead of inventing a new design system.
-
-### Example of the project’s core pattern
-
-```css
-/* Token source of truth */
-:root {
-  --brand: #f4466c;
-  --page-bg: #f4f1ef;
-  --fg-strong: #151b22;
-  --stroke: #667d9540;
-}
-
-/* Reusable layout utility */
-.section {
-  border-top: 1px solid var(--stroke);
-  padding: 80px 16px;
-}
-
-/* Reusable component */
-.btn-primary {
-  background: var(--btn-primary-bg);
-  color: var(--btn-on-primary);
-  border-radius: 999px;
-}
-```
-
-This is the canonical pattern to keep when integrating new Figma screens or components.
-
----
-
-## 9) Key file references
-
-- `index.html` — page markup and section composition
-- `css/styles.css` — token definitions, global styles, reusable classes, responsive rules, dark mode rules
-- `js/main.js` — theme toggling, floating menu behavior, interactions
-- `fonts/fonts.css` — font-face declarations for Supreme
-- `README.md` — project summary and usage notes
-- `assets/` — static images, icons, and logo resources
-
----
-
-## 10) Summary
-
-This repo is best understood as a token-first, class-driven, static marketing site. The design system is centralized in CSS custom properties, with no framework or component library to abstract away the visual design. The main integration rule for future Figma work is: stay within the existing token system and the existing section/class conventions; do not introduce a different styling paradigm unless the target design requires a true new pattern.
-
-For MCP/Figma implementations, the safest workflow is:
-
-- read the Figma structure and screenshot
-- map layers to existing semantic classes
-- reuse the current CSS variables and layout utilities
-- only add minimal new selectors when a design truly differs from the established pattern
+The page follows the Figma "Homepage" structure: sticky header → hero (headline, lead, CTA, stats) → about (values + rating card) → community (domains + role chips) → organizers → sponsoring/contact CTA → footer + legal dialog.
