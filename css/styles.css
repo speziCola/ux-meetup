@@ -70,7 +70,9 @@ a{color:inherit}
 .display,.font-display-xl{position:relative;margin:0;max-width:850px}
 .display-copy{position:relative;z-index:1}
 .focus-graphic{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.focus-shape{fill:color-mix(in srgb,var(--brand) 10%,transparent);stroke:var(--brand);stroke-width:1;stroke-dasharray:4 3;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.focus-shape{fill:color-mix(in srgb,var(--brand) 10%,transparent);stroke:var(--brand);stroke-width:1;stroke-dasharray:4 3;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;animation:focus-march 3s linear infinite}
+@keyframes focus-march{to{stroke-dashoffset:-14}}
+@media (prefers-reduced-motion:reduce){.focus-shape{animation:none}}
 .focus{display:inline}
 .focus-tag{position:absolute;left:0;top:0;z-index:2;background:var(--brand);color:#fff;font-family:var(--font-info);font-weight:400;font-size:12px;line-height:12px;letter-spacing:0;padding:2px 8px;border-radius:4px;white-space:nowrap}
 .subtext{padding-block:16px;font-size:22px;line-height:33px;max-width:840px}
