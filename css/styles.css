@@ -179,7 +179,7 @@
   .logo-mark{width:40px;height:40px}
   .logo-word{width:auto;height:18px;margin-top:2px}
   .navlinks{flex:1;display:flex;align-items:center;justify-content:center;height:54px}
-  .navlinks a,.footlinks a,.fmenu-links a{display:flex;align-items:center;height:54px;padding-inline:var(--space-3);font-size:var(--text-sm);line-height:var(--leading-sm);color:var(--fg-strong);text-decoration:underline;text-underline-position:from-font}
+  .navlinks a,.footlinks a,.fmenu-links a{display:flex;align-items:center;height:54px;padding-inline:var(--space-3);font-size:var(--text-md);line-height:var(--leading-sm);color:var(--fg-strong);text-decoration:underline;text-underline-position:from-font}
   .navlinks a:hover,.footlinks a:hover{color:var(--fg-brand)}
 
   /* icons + theme toggle (Figma: Theme-Toggle 36×36, moon/sun 20) */
@@ -311,7 +311,7 @@
     .footlinks a{height:44px;font-size:var(--text-md);padding-inline:0}
     .foot-prefs{display:none} /* language lives in the menu, theme in the pill */
 
-    .fmenu{display:block;position:fixed;z-index:var(--z-menu);right:var(--space-2);bottom:calc(9px + env(safe-area-inset-bottom,0px));width:268px;height:312px;pointer-events:none;
+    .fmenu{display:block;position:fixed;z-index:var(--z-menu);right:var(--space-2);bottom:calc(9px + env(safe-area-inset-bottom,0px));width:300px;height:312px;pointer-events:none;
       border:1px solid var(--stroke);border-radius:28px;
       clip-path:inset(256px 7px 7px 108px round 24px);transition:clip-path .42s var(--ease-spring)}
     .fmenu.open{clip-path:inset(-1px round 28px);pointer-events:auto;background:var(--surface100);box-shadow:0 12px 40px rgb(var(--shadow-rgb) / .18)}
