@@ -5,10 +5,10 @@ Static site built from the Figma file "UX Freiburg Meetup" › Homepage.
 ## Structure
 
 ```
-index.html              page markup
-css/styles.css          all styles + design tokens (light/dark, from Figma variables)
-js/main.js              theme toggle + floating mobile menu
-fonts/fonts.css         @font-face for Supreme (put the .woff2 files next to it)
+index.html              page markup + all styles and design tokens (inline <style>, light/dark, from Figma variables)
+js/i18n.js              German translations
+js/main.js              language + theme switching, floating mobile menu, legal dialog
+fonts/                  Supreme (.woff2 subset, .ttf fallback); @font-face rules are in index.html
 assets/
   logos/
     logo-mark.svg       header/footer logo symbol
@@ -19,8 +19,8 @@ assets/
   icons/
     moon.svg  sun.svg  menu.svg
   images/
-    hero-art-light.png  hero-art-dark.png   pixelated triangles behind the headline
-    portrait-christopher.png                organizer photo (256×256)
+    hero-art-{light,dark}.webp / .png       pixelated triangles behind the headline (WebP lossless, PNG fallback)
+    portrait-christopher-{160,256,306}.{avif,webp} / .png   organizer photo
 ```
 
 ## Still placeholder

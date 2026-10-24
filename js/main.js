@@ -6,6 +6,8 @@
   let lang=LANGS.includes(document.documentElement.lang)?document.documentElement.lang:'en';
   const t=key=>(I18N[lang]&&I18N[lang][key])||I18N.en[key]||key;
   const root=document.documentElement;
+  // Coalesces layout reads into the next frame, so they never run right after a DOM write (no forced reflow).
+  const onNextFrame=fn=>{let id=0;return()=>{if(!id)id=requestAnimationFrame(()=>{id=0;fn()})}};
   const mq=window.matchMedia('(prefers-color-scheme: dark)');
   const focusTitle=document.querySelector('.display');
   const focusText=document.querySelector('.focus-text');
@@ -90,14 +92,25 @@
     focusTag.style.left=`${Math.min(...rows.map(row=>row.left))+8}px`;
     focusTag.style.top=`${Math.max(...rows.map(row=>row.bottom))-8}px`;
   };
+  const scheduleFocusShape=onNextFrame(updateFocusShape);
+  // ResizeObserver also fires once right after the first layout, which draws the initial shape without a sync reflow.
   if(focusTitle&&'ResizeObserver' in window)new ResizeObserver(updateFocusShape).observe(focusTitle);
-  window.addEventListener('resize',updateFocusShape);
-  document.fonts.ready.then(updateFocusShape);
-  updateFocusShape();
+  else scheduleFocusShape();
+  window.addEventListener('resize',scheduleFocusShape);
+  document.fonts.ready.then(scheduleFocusShape);
   let saved=null; try{saved=localStorage.getItem(THEME_KEY)}catch(e){}
   if(saved==='light'||saved==='dark') root.setAttribute('data-theme',saved);
   const isDark=()=>{const t=root.getAttribute('data-theme');return t?t==='dark':mq.matches};
-  const sync=()=>{const d=isDark();document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.setAttribute('aria-label',t(d?'theme.toLight':'theme.toDark')))};
+  // Hero art: each <picture> carries a placeholder <source> for the opposite system scheme, so only the
+  // image for the system theme is downloaded. When the active theme differs (manual choice or toggle),
+  // drop that image's placeholder so the real file loads.
+  const loadThemeArt=()=>{
+    const active=isDark()?'dark-only':'light-only';
+    document.querySelectorAll('[data-theme-placeholder]').forEach(source=>{
+      if(source.parentElement.querySelector('img').classList.contains(active))source.remove();
+    });
+  };
+  const sync=()=>{const d=isDark();loadThemeArt();document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.setAttribute('aria-label',t(d?'theme.toLight':'theme.toDark')))};
   document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.addEventListener('click',()=>{
     const next=isDark()?'light':'dark'; root.setAttribute('data-theme',next);
     try{localStorage.setItem(THEME_KEY,next)}catch(e){} sync();
@@ -112,11 +125,13 @@
   const applyLang=next=>{
     lang=LANGS.includes(next)?next:'en';
     root.lang=lang;
-    textNodes.forEach(({el,key,en})=>{el.textContent=lang==='en'?en:(I18N[lang][key]??en)});
-    labelNodes.forEach(({el,key,en})=>el.setAttribute('aria-label',lang==='en'?en:(I18N[lang][key]??en)));
+    // Only touch text that actually changes: rewriting identical text creates new text nodes, which the
+    // browser reports as a fresh (later) Largest Contentful Paint for the hero headline.
+    textNodes.forEach(({el,key,en})=>{const next=lang==='en'?en:(I18N[lang][key]??en);if(el.textContent!==next)el.textContent=next});
+    labelNodes.forEach(({el,key,en})=>{const next=lang==='en'?en:(I18N[lang][key]??en);if(el.getAttribute('aria-label')!==next)el.setAttribute('aria-label',next)});
     langButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
     sync();
-    updateFocusShape();
+    scheduleFocusShape();
     delete root.dataset.i18nPending;
   };
   langButtons.forEach(b=>b.addEventListener('click',()=>{
@@ -127,12 +142,13 @@
 
   const menu=document.getElementById('fmenu'), btn=document.getElementById('fmenu-btn');
   const talk=document.querySelector('.talk'), pill=menu.querySelector('.fpill');
-  const syncTalkContrast=()=>{
+  const checkTalkContrast=()=>{
     if(!talk||!pill)return;
     const a=pill.getBoundingClientRect(), b=talk.getBoundingClientRect();
     const overlaps=a.width>0&&a.height>0&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
     menu.classList.toggle('over-talk',!menu.classList.contains('open')&&overlaps);
   };
+  const syncTalkContrast=onNextFrame(checkTalkContrast);
   const menuFocusables=menu.querySelectorAll('.fmenu-links a, .fmenu-lang button');
   menuFocusables.forEach(el=>el.tabIndex=-1);
   const setOpen=o=>{if(menu.classList.contains('open')===o)return;menu.classList.toggle('open',o);btn.setAttribute('aria-expanded',String(o));
@@ -146,7 +162,7 @@
   window.addEventListener('scroll',syncTalkContrast,{passive:true});
   window.addEventListener('resize',syncTalkContrast);
   if(talk&&'ResizeObserver' in window)new ResizeObserver(syncTalkContrast).observe(talk);
-  syncTalkContrast();
+  else syncTalkContrast();
 
   const legalDialog=document.getElementById('legal-notice');
   const legalTrigger=document.querySelector('[data-open-legal]');

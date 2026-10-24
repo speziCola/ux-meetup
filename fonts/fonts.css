@@ -1,5 +1,0 @@
-/* Supreme (Fontshare, ITF Free Font License). woff2 first, ttf as fallback.
-   Text styles live in css/styles.css (@layer type). */
-@font-face{font-family:"Supreme";src:url("Supreme-Regular.woff2") format("woff2"),url("Supreme-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"Supreme";src:url("Supreme-Medium.woff2") format("woff2"),url("Supreme-Medium.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family:"Supreme";src:url("Supreme-Extrabold.woff2") format("woff2"),url("Supreme-Extrabold.ttf") format("truetype");font-weight:800;font-style:normal;font-display:swap}

@@ -8,7 +8,7 @@ Reference Figma: https://www.figma.com/design/RTa1NOZYSTbJbehzlxKncQ/UX-Freiburg
 
 ## 1) CSS architecture
 
-All styles live in `css/styles.css`, organised in cascade layers. The layer order decides which rule wins, so selectors stay flat (mostly a single class) and `!important` is never needed:
+All styles live in the `<style>` block in the `<head>` of `index.html` (inlined so no stylesheet blocks the first render; there is no separate CSS file), organised in cascade layers. The layer order decides which rule wins, so selectors stay flat (mostly a single class) and `!important` is never needed:
 
 ```css
 @layer reset, tokens, base, type, layout, components, utilities;
@@ -57,7 +57,7 @@ Components must only use semantic tokens, never primitives or raw hex.
 
 ### 2.3 Typography
 
-- Font: Supreme, self-hosted in `fonts/` as woff2 (ttf fallback), declared in `fonts/fonts.css` (only `@font-face` lives there). The Extrabold weight is preloaded in `index.html`.
+- Font: Supreme, self-hosted in `fonts/`. The `@font-face` rules are at the top of the inline `<style>`; all three weights are preloaded (`<link rel="preload" as="font" crossorigin>`). The `.woff2` files are **subset** to Basic Latin, Latin-1 (incl. äöüß), general punctuation and € ™ → ← ★ (~11 KB each); the full `.ttf` files are only a fallback for old browsers. Characters outside the subset render in the system font — re-subset from the `.ttf` if new text needs them.
 - Families: `--font-title`, `--font-body`, `--font-info` (monospace). Weights: `--weight-regular/medium/heavy`.
 - Scale: `--text-{xs,sm,md,lg,xl,heading-sm,heading-md,display-xl}` with matching `--leading-*`. **Font sizes and line-heights are in `rem`** so text scales with the visitor's browser font size; comments note the Figma px values (e.g. `/* 14/24 */`).
 - Responsive type is done by redefining the size/leading tokens inside the `@media (max-width:720px)` block in `@layer tokens`, not by overriding classes.
@@ -99,7 +99,7 @@ Color comes from utilities (`.font-color-regular`, `.font-color-light`) or is in
 
 ### 4.2 Components (`@layer components`)
 
-Components are page-specific classes in `index.html` + `css/styles.css` (no component library, no Storybook). Main ones:
+Components are page-specific classes in `index.html` (markup + inline `<style>`) (no component library, no Storybook). Main ones:
 
 - Buttons: `.btn` base (pill shape, border, centered) + one modifier: `.btn-outline`, `.btn-solid`, `.btn-primary`.
 - Header/nav: `.header`, `.nav`, `.navlinks`, `.nav-actions`, `.logo`, `.theme-toggle`.
@@ -130,13 +130,18 @@ Breakpoints mirror the Figma mobile design: `1100px`, `900px`, `720px` (`max-wid
 assets/
   logos/   logo-mark.svg, wordmark.svg, logo-mark-favicon(-dark).svg, sponsor-smashing.svg
   icons/   moon.svg, sun.svg, menu.svg
-  images/  hero-art-light.png, hero-art-dark.png, portrait-christopher.png
+  images/  hero-art-{light,dark}.webp (lossless) + .png fallback,
+           portrait-christopher-{160,256,306}.{avif,webp} + .png fallback
 ```
 
 - Logos are `<img>` SVGs (dark artwork); dark mode inverts them via `--logo-filter`.
 - UI icons (moon, sun, menu) are inline `<svg>` using `stroke: currentColor`.
 - Light/dark image pairs use `.light-only` / `.dark-only` (opacity crossfade driven by the theme switch tokens).
-- Images carry `width`/`height` attributes. No optimisation pipeline exists; optimise assets by hand.
+- Images carry `width`/`height` attributes. No optimisation pipeline exists; optimise assets by hand (e.g. with sharp/squoosh) at the rendered size and serve them through `<picture>` with AVIF/WebP sources and the PNG as `<img>` fallback. `picture{display:contents}` + `source{display:none}` in the reset layer keep the `<img>` laid out as if there were no wrapper.
+- Hero art: one `<picture>` per theme, `fetchpriority="high"`, never `loading="lazy"` (it can be the LCP element). Each has a `<source data-theme-placeholder>` with an empty 780×575 SVG for the *other* system color scheme, so only the image for the current scheme downloads. `loadThemeArt()` in `main.js` removes the placeholder when a manual theme choice needs the other image. Spaces inside a `data:` URL in `srcset` must be written as `%20`, otherwise the source is silently ignored.
+- Below-the-fold images get `loading="lazy" decoding="async"`.
+- **Cache busting:** every local asset URL carries `?v=<first 8 hex chars of the file's SHA-256>` (fonts in `@font-face` and preloads, images, logos, favicons, JS). When you change a file, update its hash everywhere it is referenced (`sha256sum <file> | cut -c1-8`).
+- **Hosting:** GitHub Pages (custom domain via `CNAME`). It always sends `Cache-Control: max-age=600` and ignores `_headers`, `.htaccess` etc., so long-lived caching needs a CDN in front (e.g. Cloudflare) or a host that supports custom headers.
 
 ---
 
@@ -144,9 +149,8 @@ assets/
 
 ```text
 .
-├── index.html        page markup and section composition
-├── css/styles.css    tokens, type, layout, components, responsive rules (layered)
-├── fonts/fonts.css   @font-face for Supreme (woff2 + ttf)
+├── index.html        page markup + all CSS (inline <style>, layered)
+├── fonts/            Supreme woff2 (subset) + ttf fallback
 ├── js/i18n.js        German translations (English is in the markup)
 ├── js/main.js        language + theme switching, focus outline drawing, mobile menu, legal dialog
 ├── assets/           logos, icons, images
