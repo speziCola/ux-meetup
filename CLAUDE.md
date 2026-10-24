@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This repository is a lightweight static marketing site for the UX Meetup Freiburg community, built directly from a Figma homepage reference. The implementation is intentionally plain HTML/CSS/JS with no framework, bundler or build step. This document captures the project's conventions so future design-to-code and Figma MCP work stays aligned with the codebase.
+This repository is a lightweight static marketing site for the UX Meetup Freiburg community, built directly from a Figma homepage reference. The implementation is intentionally plain HTML/CSS/JS with no framework or bundler. The only tooling is `tools/build.mjs`, a dependency-free Node script that generates the German page, the legal pages and the sitemap from `index.html` + `content/` (see section 8); its output is committed, so hosting stays plain static files. This document captures the project's conventions so future design-to-code and Figma MCP work stays aligned with the codebase.
 
 Reference Figma: https://www.figma.com/design/RTa1NOZYSTbJbehzlxKncQ/UX-Freiburg-Meetup?node-id=2707-7938&m=dev
 
@@ -106,9 +106,10 @@ Components are page-specific classes in `index.html` (markup + inline `<style>`)
 - Hero: `.hero`, `.hero-art`, `.display`, `.focus-*`, `.subtext`, `.stats`, `.stat`.
 - Content: `.card`, `.chips`/`.chip`, `.about`, `.value`, `.rating`, `.bar`, `.domain`, `.team`/`.person`, `.talk`/`.talk-col`, `.email`.
 - Mobile floating menu: `.fmenu`, `.fpill`, `.fmenu-links`.
-- Legal dialog: `.legal-dialog*`.
+- Legal pages: `.legal-page` section + `.prose` text column.
+- Events (only rendered when `content/events.json` has entries): `.events` grid of `.card.event`.
 
-**Class names used by `js/main.js` — don't rename without updating the JS:** `.display`, `.focus-text`, `.focus-graphic`, `.focus-shape`, `.focus-tag`, `.talk`, `.fpill`, `.fmenu-links`, state classes `.open` and `.over-talk`, IDs `#fmenu`, `#fmenu-btn`, `#legal-notice`, and the `[data-theme-toggle]` / `[data-open-legal]` attributes.
+**Class names used by `js/main.js` — don't rename without updating the JS:** `.display`, `.focus-text`, `.focus-graphic`, `.focus-shape`, `.focus-tag`, `.talk`, `.fpill`, `.fmenu-links`, `.fmenu-lang`, state classes `.open` and `.over-talk`, IDs `#fmenu`, `#fmenu-btn`, and the `[data-theme-toggle]` / `[data-lang-link]` attributes.
 
 ### 4.3 Responsive
 
@@ -118,10 +119,11 @@ Breakpoints mirror the Figma mobile design: `1100px`, `900px`, `720px` (`max-wid
 
 ### 4.4 Language (EN / DE)
 
-- English is the source text in `index.html` (also what no-JS visitors and crawlers get). German strings live in `js/i18n.js` (`window.UXFR_I18N.de`), keyed by `data-i18n="key"` (text content) or `data-i18n-label="key"` (`aria-label`). Strings that only JS sets (theme toggle labels) have both `en` and `de` entries.
+- Each language is its own static, indexable page: English at `/` (`index.html`, the hand-edited source), German at `/de/` (`de/index.html`, **generated** by `tools/build.mjs`). Content never depends on JS.
+- German strings live in `content/de.json`, keyed by the `data-i18n="key"` (text content) and `data-i18n-label="key"` (`aria-label`) attributes in `index.html`. The build replaces those texts and sets `<html lang="de">`; it warns about missing or unused keys. The two JS-set strings (theme toggle labels) are in `LABELS` in `main.js`.
 - Every new piece of visible text needs a `data-i18n` key and a German entry. Text with markup inside must be split into separate elements, each with its own key (see the hero headline: `titlePre` / `titleFocus` / `titlePost`).
-- Initial language: saved choice in `localStorage` (`uxfr-lang`), otherwise the first `en`/`de` match in `navigator.languages`, otherwise English. The inline `<head>` script decides this before first paint and sets `<html lang>`; for German it hides the body (`data-i18n-pending`) until `main.js` has swapped the text in.
-- The switcher (`.lang-switch`, buttons with `data-lang` + `aria-pressed`) and the theme toggle sit in `.foot-prefs`, the first item of the footer's `.footlinks`. Only a manual click stores a preference.
+- First visit: the inline `<head>` script on the English home page redirects to `/de/` when the browser's first `en`/`de` language is German and no choice is stored. Clicking the switcher stores the choice in `localStorage` (`uxfr-lang`), which always wins. Crawlers (no German preference) are never redirected.
+- The switcher (`<nav class="lang-switch">` with `<a data-lang-link="en|de">` links, current one `aria-current="page"`) and the theme toggle sit in `.foot-prefs`, the first item of the footer's `.footlinks`. The build points the links at the counterpart of the current page (e.g. `/impressum/` ↔ `/en/legal-notice/`).
 - At ≤720px (when the floating mobile menu is active) `.foot-prefs` is hidden: the language switcher appears inside the open menu panel (`.fmenu-lang`, bottom-left next to the pill) and the theme toggle is the one in the pill. Both switchers are kept in sync by `main.js` via `[data-lang]`.
 
 ## 5) Assets and icons
@@ -149,16 +151,36 @@ assets/
 
 ```text
 .
-├── index.html        page markup + all CSS (inline <style>, layered)
-├── fonts/            Supreme woff2 (subset) + ttf fallback
-├── js/i18n.js        German translations (English is in the markup)
-├── js/main.js        language + theme switching, focus outline drawing, mobile menu, legal dialog
-├── assets/           logos, icons, images
+├── index.html            English home: markup + all CSS (inline <style>). Hand-edited, except the build regions
+├── content/
+│   ├── site.json         site facts, page URLs, titles/descriptions (EN+DE), events strings
+│   ├── de.json           German strings for the data-i18n keys
+│   ├── events.json       meetups → events section + Event JSON-LD (empty = no section)
+│   ├── events.example.json   one example entry with every field
+│   └── legal/            {legal,privacy}.{en,de}.html – bodies of the legal pages
+├── tools/build.mjs       generator (plain Node ≥18, no dependencies)
+├── de/                   generated: German home
+├── impressum/, en/legal-notice/, datenschutz/, en/privacy/   generated legal pages
+├── sitemap.xml           generated
+├── robots.txt, site.webmanifest, CNAME
+├── fonts/                Supreme woff2 (subset) + ttf fallback
+├── js/main.js            theme toggle, language preference, focus outline drawing, mobile menu
+├── assets/               logos (+ apple-touch-icon, icon-192/512), icons, images (+ og-image-{en,de}.png 1200×630)
 ├── README.md
 └── CLAUDE.md
 ```
 
-No framework, no TypeScript, no preprocessor, no CSS-in-JS, no Tailwind. Open `index.html` directly or upload the folder to any static host.
+No framework, no TypeScript, no preprocessor, no CSS-in-JS, no Tailwind. All internal URLs are root-relative (`/assets/…`, `/de/`), so preview through a local static server at the repo root (e.g. `npx http-server`), not via `file://`.
+
+## 8) Build and SEO
+
+Run `node tools/build.mjs` after **any** change to `index.html` or `content/`, and commit the output. It is idempotent.
+
+- **Generated regions in `index.html`:** `<!-- build:head -->` (title, description, canonical, hreflang, Open Graph/Twitter, Organization + WebSite JSON-LD) and `<!-- build:events -->`. Don't edit inside them; change `content/` instead.
+- **Generated files:** `de/index.html`, the four legal pages, `sitemap.xml`. Never edit them by hand.
+- **Legal pages** reuse the home page's head, header, footer and CSS; only `<main>` is replaced by the matching `content/legal/*.html` body. Section links (`#about`) and the logo link back to that language's home.
+- **SEO rules:** every page has a self-referencing canonical; indexable pages have reciprocal `hreflang` en/de + `x-default` (= English), in the `<head>` and in `sitemap.xml`. Pages with `"noindex": true` in `site.json` (currently the privacy placeholders) get `robots noindex` and are left out of the sitemap. The build warns when a title exceeds 60 or a description 160 characters.
+- **Events:** add entries to `content/events.json` (copy from `events.example.json`). Each becomes a card (upcoming/past, split at build time, so rebuild after a meetup) and a schema.org `Event` (offline, Freiburg im Breisgau, organizer, free offer). `start`/`end` are ISO 8601 with offset (`+01:00` winter, `+02:00` summer).
 
 ---
 
@@ -172,4 +194,4 @@ No framework, no TypeScript, no preprocessor, no CSS-in-JS, no Tailwind. Open `i
 6. Keep responsive changes in the central `@media` blocks.
 7. Prefer flexbox/grid + tokens over absolute positioning unless the design truly requires it.
 
-The page follows the Figma "Homepage" structure: sticky header → hero (headline, lead, CTA, stats) → about (values + rating card) → community (domains + role chips) → organizers → sponsoring/contact CTA → footer + legal dialog.
+The page follows the Figma "Homepage" structure: sticky header → hero (headline, lead, CTA, stats) → about (values + rating card) → community (domains + role chips) → organizers → (events, when present) → sponsoring/contact CTA → footer with language/theme switchers and links to the legal pages.

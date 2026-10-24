@@ -1,0 +1,49 @@
+{
+  "origin": "https://uxmf.de",
+  "name": "UX Meetup Freiburg",
+  "foundingDate": "2018",
+  "email": "christopher@qrt.de",
+  "meetupUrl": "https://www.meetup.com/ux-meetup-freiburg/",
+  "logo": "/assets/logos/icon-512.png",
+  "locality": "Freiburg im Breisgau",
+  "region": "Baden-Württemberg",
+  "country": "DE",
+
+  "pages": {
+    "home":    { "en": { "path": "/" },                 "de": { "path": "/de/" } },
+    "legal":   { "en": { "path": "/en/legal-notice/" }, "de": { "path": "/impressum/" } },
+    "privacy": { "en": { "path": "/en/privacy/", "noindex": true }, "de": { "path": "/datenschutz/", "noindex": true } }
+  },
+
+  "seo": {
+    "en": {
+      "locale": "en_US",
+      "home": {
+        "title": "UX Meetup Freiburg – UX, Product Design & Research Community",
+        "description": "Free meetups in Freiburg since 2018: short talks from real UX and product projects, open discussion and drinks. For designers, researchers, devs and PMs."
+      },
+      "legal": { "title": "Legal Notice – UX Meetup Freiburg", "description": "Legal notice (Impressum) for uxmf.de, the website of UX Meetup Freiburg, a volunteer-run community for UX, product design and research." },
+      "privacy": { "title": "Privacy Policy – UX Meetup Freiburg", "description": "How uxmf.de, the website of UX Meetup Freiburg, handles personal data." },
+      "ogImage": "/assets/images/og-image-en.png",
+      "ogImageAlt": "UX Meetup Freiburg – Where Freiburg meets to build better products",
+      "orgDescription": "UX Meetup Freiburg is a volunteer-run community for UX, product design, user research and digital products in Freiburg im Breisgau. Free meetups with short talks from real projects since 2018."
+    },
+    "de": {
+      "locale": "de_DE",
+      "home": {
+        "title": "UX Meetup Freiburg – Community für UX, Design & Research",
+        "description": "Kostenlose Meetups in Freiburg seit 2018: kurze Vorträge aus echten UX- und Produktprojekten, offene Diskussion und Getränke. Für Design, Research und Dev."
+      },
+      "legal": { "title": "Impressum – UX Meetup Freiburg", "description": "Impressum von uxmf.de, der Website des UX Meetup Freiburg – einer ehrenamtlich organisierten Community für UX, Product Design und Research." },
+      "privacy": { "title": "Datenschutzerklärung – UX Meetup Freiburg", "description": "Wie uxmf.de, die Website des UX Meetup Freiburg, mit personenbezogenen Daten umgeht." },
+      "ogImage": "/assets/images/og-image-de.png",
+      "ogImageAlt": "UX Meetup Freiburg – Wo Freiburg sich trifft für bessere Produkte",
+      "orgDescription": "Das UX Meetup Freiburg ist eine ehrenamtlich organisierte Community für UX, Product Design, User Research und digitale Produkte in Freiburg im Breisgau. Kostenlose Meetups mit kurzen Praxisvorträgen seit 2018."
+    }
+  },
+
+  "events": {
+    "en": { "eyebrow": "Meetups", "title": "Upcoming and past meetups", "upcoming": "Upcoming", "past": "Past", "speaker": "Speaker", "details": "Details on Meetup" },
+    "de": { "eyebrow": "Meetups", "title": "Kommende und vergangene Meetups", "upcoming": "Demnächst", "past": "Vergangen", "speaker": "Speaker", "details": "Details auf Meetup" }
+  }
+}

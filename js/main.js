@@ -1,10 +1,12 @@
 (function(){
   const THEME_KEY='uxfr-theme'; // keep in sync with the inline script in index.html
   const LANG_KEY='uxfr-lang';   // keep in sync with the inline script in index.html
-  const LANGS=['en','de'];
-  const I18N=window.UXFR_I18N||{en:{},de:{}};
-  let lang=LANGS.includes(document.documentElement.lang)?document.documentElement.lang:'en';
-  const t=key=>(I18N[lang]&&I18N[lang][key])||I18N.en[key]||key;
+  // Page content is static per language (/ and /de/, built by tools/build.mjs); only JS-set labels live here.
+  const LABELS={
+    en:{toDark:'Switch to dark mode',toLight:'Switch to light mode'},
+    de:{toDark:'Zum dunklen Modus wechseln',toLight:'Zum hellen Modus wechseln'}
+  };
+  const labels=LABELS[document.documentElement.lang]||LABELS.en;
   const root=document.documentElement;
   // Coalesces layout reads into the next frame, so they never run right after a DOM write (no forced reflow).
   const onNextFrame=fn=>{let id=0;return()=>{if(!id)id=requestAnimationFrame(()=>{id=0;fn()})}};
@@ -110,35 +112,17 @@
       if(source.parentElement.querySelector('img').classList.contains(active))source.remove();
     });
   };
-  const sync=()=>{const d=isDark();loadThemeArt();document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.setAttribute('aria-label',t(d?'theme.toLight':'theme.toDark')))};
+  const sync=()=>{const d=isDark();loadThemeArt();document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.setAttribute('aria-label',d?labels.toLight:labels.toDark))};
   document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.addEventListener('click',()=>{
     const next=isDark()?'light':'dark'; root.setAttribute('data-theme',next);
     try{localStorage.setItem(THEME_KEY,next)}catch(e){} sync();
   }));
   mq.addEventListener&&mq.addEventListener('change',sync); sync();
 
-  // Language: English lives in the markup; remember it per element so we can switch back.
-  // The initial language is picked by the inline script in <head> (saved choice, else browser language).
-  const textNodes=[...document.querySelectorAll('[data-i18n]')].map(el=>({el,key:el.dataset.i18n,en:el.textContent}));
-  const labelNodes=[...document.querySelectorAll('[data-i18n-label]')].map(el=>({el,key:el.dataset.i18nLabel,en:el.getAttribute('aria-label')}));
-  const langButtons=[...document.querySelectorAll('[data-lang]')];
-  const applyLang=next=>{
-    lang=LANGS.includes(next)?next:'en';
-    root.lang=lang;
-    // Only touch text that actually changes: rewriting identical text creates new text nodes, which the
-    // browser reports as a fresh (later) Largest Contentful Paint for the hero headline.
-    textNodes.forEach(({el,key,en})=>{const next=lang==='en'?en:(I18N[lang][key]??en);if(el.textContent!==next)el.textContent=next});
-    labelNodes.forEach(({el,key,en})=>{const next=lang==='en'?en:(I18N[lang][key]??en);if(el.getAttribute('aria-label')!==next)el.setAttribute('aria-label',next)});
-    langButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
-    sync();
-    scheduleFocusShape();
-    delete root.dataset.i18nPending;
-  };
-  langButtons.forEach(b=>b.addEventListener('click',()=>{
-    try{localStorage.setItem(LANG_KEY,b.dataset.lang)}catch(e){}
-    applyLang(b.dataset.lang);
+  // Language switcher links: remember the choice, so the first-visit redirect in <head> never overrides it.
+  document.querySelectorAll('[data-lang-link]').forEach(a=>a.addEventListener('click',()=>{
+    try{localStorage.setItem(LANG_KEY,a.dataset.langLink)}catch(e){}
   }));
-  applyLang(lang);
 
   const menu=document.getElementById('fmenu'), btn=document.getElementById('fmenu-btn');
   const talk=document.querySelector('.talk'), pill=menu.querySelector('.fpill');
@@ -149,7 +133,7 @@
     menu.classList.toggle('over-talk',!menu.classList.contains('open')&&overlaps);
   };
   const syncTalkContrast=onNextFrame(checkTalkContrast);
-  const menuFocusables=menu.querySelectorAll('.fmenu-links a, .fmenu-lang button');
+  const menuFocusables=menu.querySelectorAll('.fmenu-links a, .fmenu-lang a');
   menuFocusables.forEach(el=>el.tabIndex=-1);
   const setOpen=o=>{if(menu.classList.contains('open')===o)return;menu.classList.toggle('open',o);btn.setAttribute('aria-expanded',String(o));
     menuFocusables.forEach(el=>el.tabIndex=o?0:-1);syncTalkContrast()};
@@ -163,22 +147,4 @@
   window.addEventListener('resize',syncTalkContrast);
   if(talk&&'ResizeObserver' in window)new ResizeObserver(syncTalkContrast).observe(talk);
   else syncTalkContrast();
-
-  const legalDialog=document.getElementById('legal-notice');
-  const legalTrigger=document.querySelector('[data-open-legal]');
-  if(legalDialog&&legalTrigger){
-    legalTrigger.addEventListener('click',event=>{
-      event.preventDefault();
-      legalDialog.showModal();
-    });
-    legalDialog.addEventListener('click',event=>{
-      if(event.target===legalDialog)legalDialog.close();
-    });
-    legalDialog.addEventListener('keydown',event=>{
-      if(event.key==='Escape'){
-        event.preventDefault();
-        legalDialog.close();
-      }
-    });
-  }
 })();

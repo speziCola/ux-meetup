@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://uxmf.de/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://uxmf.de/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://uxmf.de/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://uxmf.de/"/>
+  </url>
+  <url>
+    <loc>https://uxmf.de/de/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://uxmf.de/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://uxmf.de/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://uxmf.de/"/>
+  </url>
+  <url>
+    <loc>https://uxmf.de/en/legal-notice/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://uxmf.de/en/legal-notice/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://uxmf.de/impressum/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://uxmf.de/en/legal-notice/"/>
+  </url>
+  <url>
+    <loc>https://uxmf.de/impressum/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://uxmf.de/en/legal-notice/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://uxmf.de/impressum/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://uxmf.de/en/legal-notice/"/>
+  </url>
+</urlset>

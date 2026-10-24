@@ -1,0 +1,17 @@
+[
+  {
+    "start": "2026-11-19T18:30:00+01:00",
+    "end": "2026-11-19T21:00:00+01:00",
+    "status": "scheduled",
+    "title": { "en": "Example: Research ops in small teams", "de": "Beispiel: Research Ops in kleinen Teams" },
+    "speaker": "Jane Doe (Example GmbH)",
+    "topic": { "en": "User research", "de": "User Research" },
+    "description": {
+      "en": "A short talk on setting up lightweight research operations in small product teams, followed by discussion and drinks.",
+      "de": "Ein kurzer Vortrag dazu, wie kleine Produktteams schlanke Research-Prozesse aufsetzen – danach Diskussion und Getränke."
+    },
+    "venue": { "name": "Example GmbH", "street": "Musterstraße 1", "postalCode": "79098" },
+    "url": "https://www.meetup.com/ux-meetup-freiburg/events/000000000/",
+    "free": true
+  }
+]
