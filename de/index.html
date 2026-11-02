@@ -105,7 +105,7 @@
     *{box-sizing:border-box}
     button{all:unset;box-sizing:border-box;cursor:pointer}
     p,h1,h2,h3,h4,dl,dd,ul{margin:0}
-    ul[class]{padding:0;list-style:none}
+    ul{padding:0;list-style:none}
     /* <picture> only picks the image source; the <img> inside keeps its own layout */
     picture{display:contents}
     source{display:none} /* otherwise they become (empty) flex items next to the img */
@@ -229,7 +229,6 @@
     .font-text-sm{font-family:var(--font-body);font-weight:var(--weight-regular);font-size:var(--text-sm);line-height:var(--leading-sm)}
     .font-text-xs{font-family:var(--font-info);font-weight:var(--weight-regular);font-size:var(--text-xs);line-height:var(--leading-xs)}
     .font-label{font-family:var(--font-body);font-weight:var(--weight-medium);font-size:var(--text-sm);line-height:var(--leading-sm)}
-    .font-eyebrow{font-family:var(--font-body);font-weight:var(--weight-medium);font-size:var(--text-sm);line-height:var(--leading-sm);color:var(--fg-brand)}
   }
 
   /* ───────────────────────── layout ───────────────────────── */
@@ -368,6 +367,7 @@
     .prose h1{color:var(--fg-strong);margin-bottom:var(--space-4)}
     .prose h2{color:var(--fg-strong);font-family:var(--font-title);font-weight:var(--weight-heavy);font-size:var(--text-xl);line-height:var(--leading-xl);letter-spacing:var(--tracking-heading);margin-top:var(--space-6)}
     .prose p,.prose ul{margin-block:var(--space-2);font-size:var(--text-lg);line-height:var(--leading-lg)}
+    .prose ul{list-style:disc;padding-left:1.25em}
     .prose a{color:var(--fg-brand);text-underline-offset:3px}
 
     /* events (rendered by tools/build.mjs from content/events.json) */
@@ -515,10 +515,7 @@ if(!lang&&(navigator.languages||[navigator.language]).map(l=>String(l).slice(0,2
   <section class="section" id="about">
     <div class="wrap about">
       <div class="about-main stack stack-lg">
-        <div class="stack stack-sm">
-          <p class="font-eyebrow" data-i18n="about.eyebrow">Über uns</p>
-          <h2 class="font-heading-md" data-i18n="about.title">Ein Abend, ein Thema, viele Perspektiven</h2>
-        </div>
+        <h2 class="font-heading-md" data-i18n="about.title">Ein Abend, ein Thema, viele Perspektiven</h2>
         <p class="font-text-lg font-color-regular measure" data-i18n="about.text">Jedes Meetup beginnt mit einem kurzen Vortrag aus der Praxis. Danach ist Zeit für Diskussion und lockere Gespräche bei Getränken und Snacks. Alle sind willkommen, und Beiträge aus der Community sind ausdrücklich erwünscht.</p>
         <dl>
           <div class="value"><dt class="font-label" data-i18n="about.practical">Praxisnah</dt><dd data-i18n="about.practicalText">Vorträge aus echten Projekten, von Design Sprints bis UX Leadership.</dd></div>
@@ -557,10 +554,7 @@ if(!lang&&(navigator.languages||[navigator.language]).map(l=>String(l).slice(0,2
 
   <section class="section" id="community">
     <div class="wrap stack stack-md">
-      <div class="stack stack-sm">
-        <p class="font-eyebrow" data-i18n="community.eyebrow">Wer wir sind</p>
-        <h2 class="font-heading-md" data-i18n="community.title">Wir wachsen seit 2018</h2>
-      </div>
+      <h2 class="font-heading-md" data-i18n="community.title">Wir wachsen seit 2018</h2>
       <p class="font-text-lg font-color-regular measure" data-i18n="community.text">Unsere Mitglieder arbeiten in Agenturen, Softwareunternehmen und als Freelancer rund um Freiburg.</p>
       <div class="card domains stack stack-xl">
         <div class="stack stack-sm">
@@ -586,10 +580,7 @@ if(!lang&&(navigator.languages||[navigator.language]).map(l=>String(l).slice(0,2
 
   <section class="section" id="organizer">
     <div class="wrap stack stack-lg">
-      <div class="stack stack-sm">
-        <p class="font-eyebrow" data-i18n="team.eyebrow">Organisation</p>
-        <h2 class="font-heading-md" data-i18n="team.title">Die Menschen hinter dem Meetup</h2>
-      </div>
+      <h2 class="font-heading-md" data-i18n="team.title">Die Menschen hinter dem Meetup</h2>
       <p class="font-text-lg font-color-regular measure" data-i18n="team.text">Wir organisieren die Meetups ehrenamtlich. Melde dich, wenn du einen Vortrag halten, Räume anbieten oder bei der Organisation helfen möchtest.</p>
       <div class="team">
         <div class="person"><picture><source type="image/avif" srcset="/assets/images/portrait-christopher-160.avif?v=a18574f4 160w, /assets/images/portrait-christopher-256.avif?v=5ab4061d 256w, /assets/images/portrait-christopher-306.avif?v=273abc1b 306w" sizes="(max-width: 900px) 77px, 256px"><source type="image/webp" srcset="/assets/images/portrait-christopher-160.webp?v=7c47ebbf 160w, /assets/images/portrait-christopher-256.webp?v=fb783c82 256w, /assets/images/portrait-christopher-306.webp?v=8f6c5467 306w" sizes="(max-width: 900px) 77px, 256px"><img class="portrait" src="/assets/images/portrait-christopher.png?v=a911ed1c" alt="Christopher Kuhrt" width="256" height="256" loading="lazy" decoding="async"></picture><div><p class="person-name">Christopher Kuhrt</p><p class="font-text-sm font-color-light" data-i18n="team.chrisRole">Organisator · Head of UX bei Etops</p></div></div>
@@ -603,10 +594,7 @@ if(!lang&&(navigator.languages||[navigator.language]).map(l=>String(l).slice(0,2
 <!-- /build:events -->
   <section class="section sponsoring" id="contact">
     <div class="wrap stack stack-lg">
-      <div class="stack stack-sm">
-        <p class="font-eyebrow" data-i18n="contact.eyebrow">Vortrag oder Sponsoring</p>
-        <h2 class="font-heading-md measure" data-i18n="contact.title">Sichtbar in Freiburgs UX- und Produktszene</h2>
-      </div>
+      <h2 class="font-heading-md measure" data-i18n="contact.title">Sichtbar in Freiburgs UX- und Produktszene</h2>
       <p class="font-text-lg font-color-regular measure" data-i18n="contact.text">Dein Sponsoring hält unsere Meetups kostenlos und offen für alle. Dafür bekommst du einen festen Platz auf dieser Seite und direkten Kontakt zu Menschen aus Design, Research und Produkt in der Region.</p>
       <div class="talk">
         <div class="talk-col stack">

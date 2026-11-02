@@ -156,10 +156,7 @@ function eventsBlock(lang) {
   });
   return `  <section class="section" id="events">
     <div class="wrap stack stack-lg">
-      <div class="stack stack-sm">
-        <p class="font-eyebrow">${t.eyebrow}</p>
-        <h2 class="font-heading-md">${t.title}</h2>
-      </div>
+      <h2 class="font-heading-md">${t.title}</h2>
 ${[group(t.upcoming, upcoming), group(t.past, past)].filter(Boolean).join('\n')}
     </div>
   </section>

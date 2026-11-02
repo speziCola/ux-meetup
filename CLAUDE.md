@@ -16,7 +16,7 @@ All styles live in the `<style>` block in the `<head>` of `index.html` (inlined 
 
 | Layer | Contains |
 |---|---|
-| `reset` | box-sizing, `button{all:unset}`, margin resets for `p, h1–h3, dl, dd, ul` |
+| `reset` | box-sizing, `button{all:unset}`, margin resets for `p, h1–h4, dl, dd, ul`, no list bullets/padding on `ul` (`.prose ul` brings bullets back) |
 | `tokens` | every custom property, theme switching, responsive token overrides |
 | `base` | element defaults: `body`, `a`, `:focus-visible`, smooth scroll |
 | `type` | one class per Figma text style (`.font-*`) |
@@ -77,7 +77,7 @@ One-off sizes (portrait 256px, menu 268×312, etc.) stay as raw values in their 
 
 One class per Figma text style. Each sets family, weight, size, line-height (and tracking where needed) — never color or layout:
 
-`.font-display-xl`, `.font-heading-md`, `.font-heading-sm`, `.font-stat-number`, `.font-text-xl`, `.font-text-lg`, `.font-text-sm`, `.font-text-xs`, `.font-label`, `.font-eyebrow` (the only one with a color, `--fg-brand`).
+`.font-display-xl`, `.font-heading-md`, `.font-heading-sm`, `.font-stat-number`, `.font-text-xl`, `.font-text-lg`, `.font-text-sm`, `.font-text-xs`, `.font-label`.
 
 Color comes from utilities (`.font-color-regular`, `.font-color-light`) or is inherited. Combine type + component + utility classes in the markup:
 

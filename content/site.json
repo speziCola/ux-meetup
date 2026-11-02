@@ -43,7 +43,7 @@
   },
 
   "events": {
-    "en": { "eyebrow": "Meetups", "title": "Upcoming and past meetups", "upcoming": "Upcoming", "past": "Past", "speaker": "Speaker", "details": "Details on Meetup" },
-    "de": { "eyebrow": "Meetups", "title": "Kommende und vergangene Meetups", "upcoming": "Demnächst", "past": "Vergangen", "speaker": "Speaker", "details": "Details auf Meetup" }
+    "en": { "title": "Upcoming and past meetups", "upcoming": "Upcoming", "past": "Past", "speaker": "Speaker", "details": "Details on Meetup" },
+    "de": { "title": "Kommende und vergangene Meetups", "upcoming": "Demnächst", "past": "Vergangen", "speaker": "Speaker", "details": "Details auf Meetup" }
   }
 }
